@@ -1,16 +1,25 @@
 import React from "react";
+import { ContentData } from "../types";
 
 interface ContentProps {
-  contentData: Array<{ part: string; exercises: number }>;
+  contentDataArr: Array<ContentData>;
 }
 
-const Content: React.FC<ContentProps> = ({ contentData }) => {
-  return contentData.map((data) => {
-    return (
-      <p>
-        {data.part} {data.exercises}
-      </p>
-    );
+interface PartProps {
+  data: ContentData;
+}
+
+const Part: React.FC<PartProps> = ({ data }) => {
+  return (
+    <p>
+      {data.part} {data.exercises}
+    </p>
+  );
+};
+
+const Content: React.FC<ContentProps> = ({ contentDataArr }) => {
+  return contentDataArr.map((data: ContentData) => {
+    return <Part data={data} />;
   });
 };
 

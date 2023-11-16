@@ -1,6 +1,7 @@
 import Content from "./Components/Content";
 import Header from "./Components/Header";
 import Total from "./Components/Total";
+import { ContentData } from "./types";
 
 const App = () => {
   const course = "Half Stack application development";
@@ -11,7 +12,7 @@ const App = () => {
   const part3 = "State of a component";
   const exercises3 = 14;
 
-  const contentData: Array<{ part: string; exercises: number }> = [
+  const contentData: Array<ContentData> = [
     { part: part1, exercises: exercises1 },
     { part: part2, exercises: exercises2 },
     { part: part3, exercises: exercises3 },
@@ -20,7 +21,7 @@ const App = () => {
   return (
     <div>
       <Header title={course} />
-      <Content contentData={contentData} />
+      <Content contentDataArr={contentData} />
       <Total total={[exercises1, exercises2, exercises3]} />
     </div>
   );
