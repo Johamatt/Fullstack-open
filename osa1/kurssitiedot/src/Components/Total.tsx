@@ -1,13 +1,15 @@
 import React from "react";
+import { PartType } from "../types";
 
 interface TotalProps {
-  total: Array<number>;
+  parts: Array<PartType>;
 }
 
-const Total: React.FC<TotalProps> = ({ total }) => {
+const Total: React.FC<TotalProps> = ({ parts }) => {
   return (
     <p>
-      Number of exercises {total.reduce((acc, current) => acc + current, 0)}
+      Number of exercises{" "}
+      {parts.map((part) => part.exercises).reduce((acc, val) => acc + val)}
     </p>
   );
 };

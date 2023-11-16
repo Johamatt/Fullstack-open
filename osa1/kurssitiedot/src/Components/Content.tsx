@@ -1,12 +1,12 @@
 import React from "react";
-import { ContentData } from "../types";
+import { PartType } from "../types";
 
 interface ContentProps {
-  contentDataArr: Array<ContentData>;
+  parts: Array<PartType>;
 }
 
 interface PartProps {
-  data: ContentData;
+  data: PartType;
 }
 
 const Part: React.FC<PartProps> = ({ data }) => {
@@ -17,10 +17,14 @@ const Part: React.FC<PartProps> = ({ data }) => {
   );
 };
 
-const Content: React.FC<ContentProps> = ({ contentDataArr }) => {
-  return contentDataArr.map((data: ContentData) => {
-    return <Part data={data} />;
-  });
+const Content: React.FC<ContentProps> = ({ parts }) => {
+  return (
+    <div>
+      {parts.map((data: PartType) => {
+        return <Part data={data} />;
+      })}
+    </div>
+  );
 };
 
 export default Content;

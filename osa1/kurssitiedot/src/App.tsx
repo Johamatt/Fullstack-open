@@ -1,28 +1,23 @@
 import Content from "./Components/Content";
 import Header from "./Components/Header";
 import Total from "./Components/Total";
-import { ContentData } from "./types";
+import { Course } from "./types";
 
 const App = () => {
-  const course = "Half Stack application development";
-  const part1 = "Fundamentals of React";
-  const exercises1 = 10;
-  const part2 = "Using props to pass data";
-  const exercises2 = 7;
-  const part3 = "State of a component";
-  const exercises3 = 14;
-
-  const contentData: Array<ContentData> = [
-    { part: part1, exercises: exercises1 },
-    { part: part2, exercises: exercises2 },
-    { part: part3, exercises: exercises3 },
-  ];
+  const course: Course = {
+    name: "Half Stack application development",
+    parts: [
+      { part: "Fundamentals of React", exercises: 10 },
+      { part: "Using props to pass data", exercises: 7 },
+      { part: "State of a component", exercises: 14 },
+    ],
+  };
 
   return (
     <div>
-      <Header title={course} />
-      <Content contentDataArr={contentData} />
-      <Total total={[exercises1, exercises2, exercises3]} />
+      <Header title={course.name} />
+      <Content parts={course.parts} />
+      <Total parts={course.parts} />
     </div>
   );
 };
