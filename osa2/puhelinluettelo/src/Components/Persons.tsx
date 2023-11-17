@@ -4,9 +4,19 @@ import { Person } from "../types";
 interface PersonsProps {
   filter: string;
   persons: Array<Person>;
+  showInfoBox: (msg: string, type: string) => void;
 }
 
-export const Persons: React.FC<PersonsProps> = ({ persons, filter }) => {
+export const Persons: React.FC<PersonsProps> = ({
+  persons,
+  filter,
+  showInfoBox,
+}) => {
+  const handleDelete = async (person: Person) => {
+    const infobox = await deleteP(person);
+    showInfoBox(infobox.msg, infobox.type);
+  };
+
   return (
     <div>
       {persons.map((person, index) =>
@@ -17,7 +27,7 @@ export const Persons: React.FC<PersonsProps> = ({ persons, filter }) => {
             </p>
             <button
               onClick={() =>
-                confirm(`Delete ${person.name}?`) ? deleteP(person.id) : null
+                confirm(`Delete ${person.name}?`) ? handleDelete(person) : null
               }
             >
               Delete

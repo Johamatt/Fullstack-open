@@ -6,23 +6,32 @@ export const getAll: () => Promise<Person[]> = async () => {
   const request: Array<Person> = await axios
     .get(baseUrl)
     .then((response) => response.data);
-
   return request;
 };
 
 export const create = async (person: Person) => {
-  const request = axios.post(baseUrl, person).then((response) => response.data);
-  return request;
+  try {
+    await axios.post(baseUrl, person);
+    return { msg: `${person.name} created`, type: "success" };
+  } catch (e) {
+    return { msg: "virhe", type: "error" };
+  }
 };
 
-export const update = (person: Person) => {
-  const request = axios
-    .put(`${baseUrl}/${person.id}`, person)
-    .then((response) => response.data);
-  return request;
+export const update = async (person: Person) => {
+  try {
+    await axios.put(`${baseUrl}/${person.id}`, person);
+    return { msg: `${person.name} updated`, type: "success" };
+  } catch (e) {
+    return { msg: "virhe", type: "error" };
+  }
 };
 
-export const deleteP = (id: number) => {
-  const request = axios.delete(`${baseUrl}/${id}`);
-  return request.then((response) => response.data);
+export const deleteP = async (person: Person) => {
+  try {
+    await axios.delete(`${baseUrl}/${person.id}`);
+    return { msg: `${person.name} deleted`, type: "success" };
+  } catch (e) {
+    return { msg: "virhe", type: "error" };
+  }
 };

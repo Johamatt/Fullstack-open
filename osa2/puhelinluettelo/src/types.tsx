@@ -3,3 +3,8 @@ export type Person = {
   name: string;
   number: string;
 };
+
+export type InfoBox = {
+  msg: string;
+  type: string;
+};
