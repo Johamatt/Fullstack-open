@@ -1,29 +1,60 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PersonForm } from "./Components/PersonForm";
 import { Filter } from "./Components/Filter";
 import { Persons } from "./Components/Persons";
 import { Person } from "./types";
+import { create, getAll, update } from "./axios";
 
 const App = () => {
-  const [persons, setPersons] = useState<Array<Person>>([
-    { name: "Arto Hellas", number: "040-123456" },
-    { name: "Ada Lovelace", number: "39-44-5323523" },
-    { name: "Dan Abramov", number: "12-43-234345" },
-    { name: "Mary Poppendieck", number: "39-23-6423122" },
-  ]);
+  const [persons, setPersons] = useState<Array<Person>>([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
 
-  const addPerson = (event: any) => {
+  const addPerson = async (event: any) => {
     event.preventDefault();
-    if (persons.map((a) => a.name).find((a) => a === newName)) {
-      alert(`${newName} is already added to phonebook`);
+
+    const existingPerson = persons.find((a) => a.name === newName);
+
+    if (existingPerson) {
+      const person: Person = {
+        name: newName,
+        number: newNumber,
+        id: existingPerson.id,
+      };
+      {
+        window.confirm(
+          `${newName} is already added to phoneboot, replace the old number with new one?`
+        )
+          ? update(person)
+          : null;
+      }
     } else {
-      setPersons(persons.concat({ name: newName, number: newNumber }));
+      try {
+        const person: Person = {
+          name: newName,
+          number: newNumber,
+          id: Math.floor(Math.random() * 10000),
+        };
+        await create(person);
+        const personsDB: Array<Person> = await getAll();
+        setPersons(personsDB);
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const personsDB: Array<Person> = await getAll();
+        setPersons(personsDB);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <div>
       <h2>Phonebook</h2>

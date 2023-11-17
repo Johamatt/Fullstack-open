@@ -1,3 +1,4 @@
+import { deleteP } from "../axios";
 import { Person } from "../types";
 
 interface PersonsProps {
@@ -10,9 +11,18 @@ export const Persons: React.FC<PersonsProps> = ({ persons, filter }) => {
     <div>
       {persons.map((person, index) =>
         person.name.toLowerCase().includes(filter) ? (
-          <p key={index}>
-            {person.name} - {person.number}
-          </p>
+          <div key={index}>
+            <p>
+              {person.name} - {person.number}
+            </p>
+            <button
+              onClick={() =>
+                confirm(`Delete ${person.name}?`) ? deleteP(person.id) : null
+              }
+            >
+              Delete
+            </button>
+          </div>
         ) : (
           <div />
         )
