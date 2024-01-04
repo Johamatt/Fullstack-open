@@ -1,25 +1,30 @@
-import express from "express";
+import express, { request } from "express";
+import { Request, Response, NextFunction } from "express";
+var morgan = require("morgan");
 
 const app = express();
 const port = 3001;
 
+app.use(express.json());
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
+morgan.token("body", (req: Request, res: Response) => JSON.stringify(req.body));
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
 
-app.use(express.json());
-
-app.get("/info", (req: any, res: any) => {
+app.get("/info", (req: Request, res: Response) => {
   res.send(
     `Phonebook has info for ${persons.length} people<br><br>` + new Date()
   );
 });
 
-app.get("/api/persons", (req: any, res: any) => {
+app.get("/api/persons", (req: Request, res: Response) => {
   res.json(persons);
 });
 
-app.get("/api/persons/:id", (req: any, res: any) => {
+app.get("/api/persons/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const note = persons.find((note) => note.id === id);
 
@@ -30,14 +35,14 @@ app.get("/api/persons/:id", (req: any, res: any) => {
   }
 });
 
-app.delete("/api/persons/:id", (req: any, res: any) => {
+app.delete("/api/persons/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
   persons = persons.filter((note) => note.id !== id);
 
   res.status(204).end();
 });
 
-app.post("/api/persons", (req: any, res: any) => {
+app.post("/api/persons", (req: Request, res: Response) => {
   const body = req.body;
   if (!body.name || !body.number) {
     return res.status(400).json({
@@ -54,9 +59,7 @@ app.post("/api/persons", (req: any, res: any) => {
     number: body.number || false,
     id: Math.floor(Math.random() * 1000000),
   };
-
   persons = persons.concat(note);
-
   res.json(note);
 });
 
