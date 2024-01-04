@@ -1,6 +1,4 @@
 import express from "express";
-import persons = require("./data.json");
-console.log(persons);
 
 const app = express();
 const port = 3001;
@@ -10,11 +8,6 @@ app.listen(port, () => {
 });
 
 app.use(express.json());
-
-const generateId = () => {
-  const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0;
-  return maxId + 1;
-};
 
 app.get("/info", (req: any, res: any) => {
   res.send(
@@ -26,58 +19,52 @@ app.get("/api/persons", (req: any, res: any) => {
   res.json(persons);
 });
 
-app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
+app.get("/api/persons/:id", (req: any, res: any) => {
+  const id = Number(req.params.id);
   const note = persons.find((note) => note.id === id);
 
   if (note) {
-    response.json(note);
+    res.json(note);
   } else {
-    response.status(404).end();
+    res.status(404).end();
   }
 });
 
-// app.delete("/api/persons/:id", (request, response) => {
-//   const id = Number(request.params.id);
-//   persons = persons.filter((note) => note.id !== id);
+app.delete("/api/persons/:id", (req: any, res: any) => {
+  const id = Number(req.params.id);
+  persons = persons.filter((note) => note.id !== id);
 
-//   response.status(204).end();
-// });
+  res.status(204).end();
+});
 
-// app.post("/api/persons", (request, response) => {
-//   const body = request.body;
+app.post("/api/persons", (req: any, res: any) => {
+  const body = req.body;
+  if (!body.name || !body.number) {
+    return res.status(400).json({
+      error: "content missing",
+    });
+  }
+  if (persons.map((person) => person.name).includes(body.name)) {
+    return res.status(400).json({
+      error: "name must be unique",
+    });
+  }
+  const note = {
+    name: body.name,
+    number: body.number || false,
+    id: Math.floor(Math.random() * 1000000),
+  };
 
-//   if (!body.content) {
-//     return response.status(400).json({
-//       error: "content missing",
-//     });
-//   }
+  persons = persons.concat(note);
 
-//   const note = {
-//     content: body.content,
-//     important: body.important || false,
-//     id: generateId(),
-//   };
+  res.json(note);
+});
 
-//   persons = persons.concat(note);
-
-//   response.json(note);
-// });
-
-// let persons = [
-//   {
-//     id: 1,
-//     content: "HTML is easy",
-//     important: true,
-//   },
-//   {
-//     id: 2,
-//     content: "Browser can execute only JavaScript",
-//     important: false,
-//   },
-//   {
-//     id: 3,
-//     content: "GET and POST are the most important methods of HTTP protocol",
-//     important: true,
-//   },
-// ];
+let persons = [
+  { id: 1, name: "Kiley", number: "134-358-8841" },
+  { id: 2, name: "Ricki", number: "303-884-5455" },
+  { id: 3, name: "Reggie", number: "491-493-1594" },
+  { id: 4, name: "Nahum", number: "624-622-1192" },
+  { id: 5, name: "Nita", number: "461-435-3259" },
+  { id: 6, name: "Liva", number: "939-340-2244" },
+];
