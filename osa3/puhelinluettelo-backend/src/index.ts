@@ -16,24 +16,26 @@ const generateId = () => {
   return maxId + 1;
 };
 
-// app.get("/", (req: any, res: { send: (arg0: string) => void }) => {
-//   res.send("<h1>Hello World!</h1>");
-// });
+app.get("/info", (req: any, res: any) => {
+  res.send(
+    `Phonebook has info for ${persons.length} people<br><br>` + new Date()
+  );
+});
 
 app.get("/api/persons", (req: any, res: any) => {
   res.json(persons);
 });
 
-// app.get("/api/persons/:id", (request, response) => {
-//   const id = Number(request.params.id);
-//   const note = persons.find((note) => note.id === id);
+app.get("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id);
+  const note = persons.find((note) => note.id === id);
 
-//   if (note) {
-//     response.json(note);
-//   } else {
-//     response.status(404).end();
-//   }
-// });
+  if (note) {
+    response.json(note);
+  } else {
+    response.status(404).end();
+  }
+});
 
 // app.delete("/api/persons/:id", (request, response) => {
 //   const id = Number(request.params.id);
