@@ -1,11 +1,15 @@
 import express, { request } from "express";
 import { Request, Response, NextFunction } from "express";
+import dotenv from "dotenv";
+dotenv.config();
+
+const Person = require("./mongo.js");
 var morgan = require("morgan");
 const cors = require("cors");
 const app = express();
 app.use(express.static("./dist"));
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
@@ -24,18 +28,15 @@ app.get("/info", (req: Request, res: Response) => {
 });
 
 app.get("/api/persons", (req: Request, res: Response) => {
-  res.json(persons);
+  Person.find({}).then((persons: any[]) => {
+    res.json(persons);
+  });
 });
 
 app.get("/api/persons/:id", (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const note = persons.find((note) => note.id === id);
-
-  if (note) {
-    res.json(note);
-  } else {
-    res.status(404).end();
-  }
+  Person.findById(req.params.id).then((person: any) => {
+    res.json(person);
+  });
 });
 
 app.delete("/api/persons/:id", (req: Request, res: Response) => {
@@ -47,23 +48,20 @@ app.delete("/api/persons/:id", (req: Request, res: Response) => {
 
 app.post("/api/persons", (req: Request, res: Response) => {
   const body = req.body;
-  if (!body.name || !body.number) {
-    return res.status(400).json({
-      error: "content missing",
-    });
+
+  console.log(request.body);
+
+  if (body.name === undefined) {
+    return res.status(400).json({ error: "content missing" });
   }
-  if (persons.map((person) => person.name).includes(body.name)) {
-    return res.status(400).json({
-      error: "name must be unique",
-    });
-  }
-  const note = {
+  const person = new Person({
     name: body.name,
     number: body.number || false,
-    id: Math.floor(Math.random() * 1000000),
-  };
-  persons = persons.concat(note);
-  res.json(note);
+  });
+
+  person.save().then((addedPerson: any) => {
+    res.json(addedPerson);
+  });
 });
 
 let persons = [
@@ -74,3 +72,9 @@ let persons = [
   { id: 5, name: "Nita", number: "461-435-3259" },
   { id: 6, name: "Liva", number: "939-340-2244" },
 ];
+
+// type Person = {
+//   id: number;
+//   name: string;
+//   number: string;
+// };

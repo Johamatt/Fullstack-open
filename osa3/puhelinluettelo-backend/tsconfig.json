@@ -8,6 +8,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts", "src/mongo.js"],
+  "include": ["src/**/*", "src/mongo.js"],
   "exclude": ["node_modules"]
 }
