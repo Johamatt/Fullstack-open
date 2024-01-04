@@ -1,17 +1,22 @@
 import express, { request } from "express";
 import { Request, Response, NextFunction } from "express";
 var morgan = require("morgan");
-
+const cors = require("cors");
 const app = express();
-const port = 3001;
 
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+app.use(cors());
 app.use(express.json());
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
 morgan.token("body", (req: Request, res: Response) => JSON.stringify(req.body));
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });
 
 app.get("/info", (req: Request, res: Response) => {
