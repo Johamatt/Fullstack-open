@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
-morgan.token("body", (req: Request) => JSON.stringify(req.body));
+morgan.token("body", (req: Request, res: Response) => JSON.stringify(req.body));
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
@@ -62,8 +62,11 @@ app.get(
 app.delete(
   "/api/persons/:id",
   (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.params.id);
     PersonModel.findByIdAndDelete(req.params.id)
       .then((person) => {
+        console.log(person);
+
         if (person) {
           res.json(person);
         } else {

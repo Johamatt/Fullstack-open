@@ -8,7 +8,8 @@ mongoose.set("strictQuery", false);
 
 const url = process.env.MONGODB_URI || "";
 
-connect(url)
+mongoose
+  .connect(url)
   .then(() => {
     console.log("connected to MongoDB");
   })
