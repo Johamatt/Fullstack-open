@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Person } from "../types";
-// const baseUrl = "https://phonebook-mooc.onrender.com/api/persons";
+const baseUrl = "https://phonebook-mooc.onrender.com/api/persons";
 
-const baseUrl = "http://localhost:3001/api/persons";
+// const baseUrl = "http://localhost:3001/api/persons";
 
 export const getAll: () => Promise<Person[]> = async () => {
   const request: Array<Person> = await axios
