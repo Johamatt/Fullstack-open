@@ -99,7 +99,7 @@ app.put(
     PersonModel.findByIdAndUpdate(
       req.params.id,
       { $set: req.body },
-      { new: true }
+      { new: true, runValidators: true, context: "query" }
     )
       .then((updatedPerson) => {
         res.json(updatedPerson);

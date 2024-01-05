@@ -23,8 +23,19 @@ export interface Person extends Document {
 }
 
 export const PersonSchema: Schema = new Schema({
-  name: { type: String, required: true },
-  number: { type: String, required: false },
+  name: { type: String, required: true, minlength: 3 },
+  number: {
+    type: String,
+    minlength: 8,
+    validate: {
+      validator: function (v: any) {
+        return /^\d{2,3}-\d+$/.test(v);
+      },
+      message: (props: any) =>
+        `${props.value} is not a valid phone number! Separate by a hyphen e.g: 12-123456 or 123-123456`,
+    },
+    required: [true, "User phone number required"],
+  },
 });
 
 PersonSchema.set("toJSON", {
