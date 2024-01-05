@@ -1,32 +1,33 @@
 import express from "express";
 import { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
-import { PersonModel } from "./mongo";
+import { Person, PersonModel } from "./mongo";
 import { errorHandler, unknownEndpoint } from "./errHandler";
 
 dotenv.config();
-var morgan = require("morgan");
+const PORT = process.env.PORT;
+const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
 app.use(express.static("./dist"));
-
 app.use(cors());
 app.use(express.json());
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
-morgan.token("body", (req: Request, res: Response) => JSON.stringify(req.body));
+morgan.token("body", (req: Request) => JSON.stringify(req.body));
 
-const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
 
 app.get("/info", (req: Request, res: Response, next: NextFunction) => {
   PersonModel.find({})
-    .then((persons: any[]) => {
+    .then((persons: Person[]) => {
       res.send(
-        `Phonebook has info for ${persons.length} people<br><br>` + new Date()
+        `Phonebook has info for ${
+          persons.length
+        } people<br><br>${new Date().toString()}`
       );
     })
     .catch((error) => next(error));
@@ -34,7 +35,7 @@ app.get("/info", (req: Request, res: Response, next: NextFunction) => {
 
 app.get("/api/persons", (req: Request, res: Response, next: NextFunction) => {
   PersonModel.find({})
-    .then((persons: any[]) => {
+    .then((persons: Person[]) => {
       res.json(persons);
     })
     .catch((error) => next(error));
@@ -42,7 +43,7 @@ app.get("/api/persons", (req: Request, res: Response, next: NextFunction) => {
 
 app.get(
   "/api/persons/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  (req: Request, res: Response, next: NextFunction) => {
     PersonModel.findById(req.params.id)
       .then((person) => {
         if (person) {
@@ -60,7 +61,7 @@ app.get(
 
 app.delete(
   "/api/persons/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  (req: Request, res: Response, next: NextFunction) => {
     PersonModel.findByIdAndDelete(req.params.id)
       .then((person) => {
         if (person) {
@@ -82,7 +83,7 @@ app.post("/api/persons", (req: Request, res: Response, next: NextFunction) => {
 
   person
     .save()
-    .then((addedPerson: any) => {
+    .then((addedPerson: Person) => {
       res.json(addedPerson);
     })
     .catch((err) => {
@@ -94,11 +95,9 @@ app.post("/api/persons", (req: Request, res: Response, next: NextFunction) => {
 app.put(
   "/api/persons/:id",
   (req: Request, res: Response, next: NextFunction) => {
-    const person = new PersonModel(req.body);
-
     PersonModel.findByIdAndUpdate(
       req.params.id,
-      { $set: req.body },
+      { $set: req.body as Person },
       { new: true, runValidators: true, context: "query" }
     )
       .then((updatedPerson) => {

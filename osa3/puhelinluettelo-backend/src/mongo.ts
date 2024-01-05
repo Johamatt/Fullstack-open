@@ -1,4 +1,4 @@
-import { Schema, Model, Document } from "mongoose";
+import { Schema, Model, Document, connect } from "mongoose";
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -6,14 +6,13 @@ dotenv.config();
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
-const url = process.env.MONGODB_URI;
+const url = process.env.MONGODB_URI || "";
 
-mongoose
-  .connect(url)
-  .then((result: any) => {
+connect(url)
+  .then(() => {
     console.log("connected to MongoDB");
   })
-  .catch((error: any) => {
+  .catch((error: Error) => {
     console.log("error connecting to MongoDB:", error.message);
   });
 
@@ -28,10 +27,10 @@ export const PersonSchema: Schema = new Schema({
     type: String,
     minlength: 8,
     validate: {
-      validator: function (v: any) {
+      validator: function (v: string) {
         return /^\d{2,3}-\d+$/.test(v);
       },
-      message: (props: any) =>
+      message: (props: { value: string }) =>
         `${props.value} is not a valid phone number! Separate by a hyphen e.g: 12-123456 or 123-123456`,
     },
     required: [true, "User phone number required"],
@@ -39,7 +38,7 @@ export const PersonSchema: Schema = new Schema({
 });
 
 PersonSchema.set("toJSON", {
-  transform: (doc: any, returnedObject: Record<string, any>) => {
+  transform: (returnedObject: Record<string, any>) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
