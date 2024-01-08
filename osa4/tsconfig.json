@@ -5,7 +5,8 @@
     "outDir": "./build",
     "strict": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
   },
   "include": ["**/*.ts", "tests/**/*.js"],
   "exclude": ["node_modules", "build"]

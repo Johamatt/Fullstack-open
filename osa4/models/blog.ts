@@ -3,7 +3,7 @@ import { ObjectId } from "mongoose";
 const mongoose = require("mongoose");
 
 export type BlogT = {
-  id: ObjectId | string;
+  id?: ObjectId | string;
   title: string;
   author: string;
   url: string;
@@ -14,9 +14,15 @@ export type BlogT = {
 
 const blogSchema = new mongoose.Schema(
   {
-    title: String,
+    title: {
+      type: String,
+      required: true,
+    },
     author: String,
-    url: String,
+    url: {
+      type: String,
+      required: true,
+    },
     likes: Number,
   }
   // {

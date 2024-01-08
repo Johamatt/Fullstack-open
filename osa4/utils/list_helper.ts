@@ -31,12 +31,7 @@ const mostLikes = (
     author,
     likes: blogsByAuthor[author].reduce((a, b) => a + b.likes, 0),
   }));
-
-  console.log(blogCounts);
-
   const authorWithMostBlogs = _.maxBy(blogCounts, "likes");
-
-  console.log(authorWithMostBlogs);
   return authorWithMostBlogs;
 };
 
