@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt = require("bcrypt");
-import UserModel, { UserT } from "../models/user";
-
+import { UserT } from "../models/user";
+const UserModel = require("../models/user");
 const usersRouter = require("express").Router();
 
 usersRouter.post("/", async (request: Request, response: Response) => {
