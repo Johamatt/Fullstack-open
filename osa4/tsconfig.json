@@ -8,6 +8,6 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
   },
-  "include": ["**/*.ts", "tests/**/*.js"],
+  "include": ["**/*.ts", "tests/**/*.js", "jest.config.js"],
   "exclude": ["node_modules", "build"]
 }

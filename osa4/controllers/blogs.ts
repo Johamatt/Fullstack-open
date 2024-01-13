@@ -1,18 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import { BlogT } from "../models/blog";
-
+import { UserT } from "../models/user";
+const BlogModel = require("../models/blog");
+const UserModel = require("../models/user");
 const blogRouter = require("express").Router();
-const Blog = require("../models/blog");
 
 blogRouter.get("/", async (request: Request, response: Response) => {
-  const blogs: Array<BlogT> = await Blog.find({});
+  const blogs: Array<BlogT> = await BlogModel.find({}).populate("user", {
+    username: 1,
+    name: 1,
+  });
   response.json(blogs);
 });
 
 blogRouter.get(
   "/:id",
   async (request: Request, response: Response, next: NextFunction) => {
-    const blog = await Blog.findById(request.params.id);
+    const blog: BlogT | null = await BlogModel.findById(request.params.id);
     response.json(blog);
     if (blog) {
       response.json(blog);
@@ -25,16 +29,21 @@ blogRouter.get(
 blogRouter.post(
   "/",
   async (request: Request, response: Response, next: NextFunction) => {
-    const body = request.body;
+    const body: BlogT = request.body;
 
-    const blog = new Blog({
+    const user: UserT = await UserModel.findById(body.userId);
+
+    const blog = new BlogModel({
       title: body.title,
       author: body.author,
       url: body.url,
       likes: body.likes !== undefined ? body.likes : 0,
+      user: user._id,
     });
 
     const savedBlog = await blog.save();
+    user.blogs = user.blogs?.concat(savedBlog._id);
+    await user.save();
     response.status(201).json(savedBlog);
   }
 );
@@ -42,7 +51,7 @@ blogRouter.post(
 blogRouter.delete(
   "/:id",
   async (request: Request, response: Response, next: NextFunction) => {
-    await Blog.findByIdAndDelete(request.params.id);
+    await BlogModel.findByIdAndDelete(request.params.id);
     response.status(204).end();
   }
 );
@@ -50,17 +59,22 @@ blogRouter.delete(
 blogRouter.put(
   "/:id",
   async (request: Request, response: Response, next: NextFunction) => {
-    const body = request.body;
-    const blog = {
+    const body: BlogT = request.body;
+    const blog: BlogT = {
       title: body.title,
       author: body.author,
       url: body.url,
       likes: body.likes !== undefined ? body.likes : 0,
+      user: "",
     };
 
-    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
-      new: true,
-    });
+    const updatedBlog = await BlogModel.findByIdAndUpdate(
+      request.params.id,
+      blog,
+      {
+        new: true,
+      }
+    );
 
     response.json(updatedBlog);
   }
