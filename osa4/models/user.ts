@@ -1,15 +1,14 @@
-import mongoose, { ObjectId, Schema } from "mongoose";
+import mongoose, { Document, ObjectId, Schema } from "mongoose";
 import { BlogT } from "./blog";
 const uniqueValidator = require("mongoose-unique-validator");
 
-export type UserT = {
-  [x: string]: any;
+export interface UserT extends Document {
   _id?: ObjectId | string;
   username: string;
   name?: string;
   passwordHash: string;
   blogs?: BlogT["_id"][];
-};
+}
 
 const userSchema = new Schema<UserT>({
   username: {
@@ -39,6 +38,6 @@ userSchema.set("toJSON", {
   },
 });
 
-const UserModel = mongoose.model("User", userSchema);
+const UserModel = mongoose.model<UserT>("User", userSchema);
 
-module.exports = UserModel;
+export default UserModel;

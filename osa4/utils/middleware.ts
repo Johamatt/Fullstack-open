@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { UserT } from "../models/user";
-const logger = require("./logger");
-const UserModel = require("../models/user");
+import logger from "./logger";
+import UserModel from "../models/user";
 
 interface TokenRequest extends Request {
   token?: string;
   user: UserT;
 }
 
-const requestLogger = (
+export const requestLogger = (
   request: Request,
   response: Response,
   next: NextFunction
@@ -21,12 +21,16 @@ const requestLogger = (
   next();
 };
 
-const tokenExtractor = (
+export const tokenExtractor = (
   request: TokenRequest,
   response: Response,
   next: NextFunction
 ) => {
-  if (request.method === "GET" || request.path === "/api/login") {
+  if (
+    request.method === "GET" ||
+    request.path === "/api/login" ||
+    request.path === "/api/users"
+  ) {
     return next();
   }
   const authHeader = request.headers["authorization"];
@@ -44,12 +48,16 @@ const tokenExtractor = (
   }
 };
 
-const userExtractor = async (
+export const userExtractor = async (
   request: TokenRequest,
   response: Response,
   next: NextFunction
 ) => {
-  if (request.method === "GET") {
+  if (
+    request.method === "GET" ||
+    request.path === "/api/login" ||
+    request.path === "/api/users"
+  ) {
     return next();
   }
   if (!request.token) {
@@ -60,7 +68,7 @@ const userExtractor = async (
     return response.status(401).json({ error: "Token invalid" });
   }
   try {
-    const user: UserT = await UserModel.findById(decodedToken.id);
+    const user: any = await UserModel.findById(decodedToken.id);
     request.user = user;
     next();
   } catch (error) {
@@ -69,11 +77,11 @@ const userExtractor = async (
   }
 };
 
-const unknownEndpoint = (request: Request, response: Response) => {
+export const unknownEndpoint = (request: Request, response: Response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
 
-const errorHandler = (
+export const errorHandler = (
   error: Error,
   request: Request,
   response: Response,
@@ -94,12 +102,4 @@ const errorHandler = (
   }
 
   next(error);
-};
-
-module.exports = {
-  requestLogger,
-  unknownEndpoint,
-  errorHandler,
-  tokenExtractor,
-  userExtractor,
 };

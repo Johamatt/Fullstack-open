@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { BlogT } from "../models/blog";
 import { UserT } from "../models/user";
-import jwt, { JwtPayload } from "jsonwebtoken";
-const BlogModel = require("../models/blog");
-const UserModel = require("../models/user");
+import BlogModel from "../models/blog";
+
 const blogRouter = require("express").Router();
 
 interface TokenRequest extends Request {
@@ -22,12 +21,15 @@ blogRouter.get("/", async (request: Request, response: Response) => {
 blogRouter.get(
   "/:id",
   async (request: Request, response: Response, next: NextFunction) => {
-    const blog: BlogT | null = await BlogModel.findById(request.params.id);
-    response.json(blog);
-    if (blog) {
-      response.json(blog);
-    } else {
-      response.status(404).end();
+    try {
+      const blog: BlogT | null = await BlogModel.findById(request.params.id);
+      if (blog) {
+        response.json(blog);
+      } else {
+        response.status(404).end();
+      }
+    } catch (error) {
+      next(error);
     }
   }
 );
@@ -35,32 +37,40 @@ blogRouter.get(
 blogRouter.post(
   "/",
   async (request: TokenRequest, response: Response, next: NextFunction) => {
-    const body: BlogT = request.body;
+    try {
+      const body: BlogT = request.body;
 
-    const blog = new BlogModel({
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes !== undefined ? body.likes : 0,
-      user: request.user._id?.toString(),
-    });
+      const blog = new BlogModel({
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes: body.likes !== undefined ? body.likes : 0,
+        user: request.user._id?.toString(),
+      });
 
-    const savedBlog = await blog.save();
-    request.user.blogs = request.user.blogs?.concat(savedBlog._id);
-    await request.user.save();
-    response.status(201).json(savedBlog);
+      const savedBlog = await blog.save();
+      request.user.blogs = request.user.blogs?.concat(savedBlog._id);
+      await request.user.save();
+      response.status(201).json(savedBlog);
+    } catch (error) {
+      next(error);
+    }
   }
 );
 
 blogRouter.delete(
   "/:id",
   async (request: TokenRequest, response: Response, next: NextFunction) => {
-    const blog: BlogT | null = await BlogModel.findById(request.params.id);
-    if (blog!.user!.toString() === request.user._id?.toString()) {
-      await BlogModel.findByIdAndDelete(request.params.id);
-      response.status(204).end();
-    } else {
-      return response.status(401).json({ error: "unauthorized" });
+    try {
+      const blog: BlogT | null = await BlogModel.findById(request.params.id);
+      if (blog && blog.user?.toString() === request.user._id?.toString()) {
+        await BlogModel.findByIdAndDelete(request.params.id);
+        response.status(204).end();
+      } else {
+        response.status(401).json({ error: "unauthorized" });
+      }
+    } catch (error) {
+      next(error);
     }
   }
 );
@@ -68,25 +78,29 @@ blogRouter.delete(
 blogRouter.put(
   "/:id",
   async (request: Request, response: Response, next: NextFunction) => {
-    const body: BlogT = request.body;
-    const blog: BlogT = {
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes !== undefined ? body.likes : 0,
-      user: "",
-    };
+    try {
+      const body: BlogT = request.body;
+      const blog: any = {
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes: body.likes !== undefined ? body.likes : 0,
+        user: "",
+      };
 
-    const updatedBlog = await BlogModel.findByIdAndUpdate(
-      request.params.id,
-      blog,
-      {
-        new: true,
-      }
-    );
+      const updatedBlog = await BlogModel.findByIdAndUpdate(
+        request.params.id,
+        blog,
+        {
+          new: true,
+        }
+      );
 
-    response.json(updatedBlog);
+      response.json(updatedBlog);
+    } catch (error) {
+      next(error);
+    }
   }
 );
 
-module.exports = blogRouter;
+export default blogRouter;

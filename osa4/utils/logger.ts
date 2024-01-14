@@ -10,7 +10,4 @@ const error = (...params: any) => {
   }
 };
 
-module.exports = {
-  info,
-  error,
-};
+export default { info, error };

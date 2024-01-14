@@ -1,32 +1,40 @@
-import { Request, Response } from "express";
-import bcrypt = require("bcrypt");
+import { Request, Response, Router } from "express";
+import bcrypt from "bcrypt";
 import { UserT } from "../models/user";
-const UserModel = require("../models/user");
-const usersRouter = require("express").Router();
+import UserModel from "../models/user";
+const usersRouter = Router();
 
 usersRouter.post("/", async (request: Request, response: Response) => {
-  const { username, name, password } = request.body as UserT;
-  const gensalt = await bcrypt.genSalt(10);
+  try {
+    const { username, name, password } = request.body as any;
+    const gensalt = await bcrypt.genSalt(10);
 
-  const passwordHash = await bcrypt.hash(password, gensalt);
+    const passwordHash = await bcrypt.hash(password, gensalt);
 
-  const user: UserT = new UserModel({
-    username,
-    name,
-    passwordHash,
-  });
+    const user: UserT = new UserModel({
+      username,
+      name,
+      passwordHash,
+    });
 
-  const savedUser: UserT = await user.save();
-  response.status(201).json(savedUser);
+    const savedUser: UserT = await user.save();
+    response.status(201).json(savedUser);
+  } catch (error) {
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 usersRouter.get("/", async (request: Request, response: Response) => {
-  const users: Array<UserT> = await UserModel.find({}).populate("blogs", {
-    title: 1,
-    author: 1,
-  });
+  try {
+    const users: Array<UserT> = await UserModel.find({}).populate("blogs", {
+      title: 1,
+      author: 1,
+    });
 
-  response.json(users);
+    response.json(users);
+  } catch (error) {
+    response.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-module.exports = usersRouter;
+export default usersRouter;

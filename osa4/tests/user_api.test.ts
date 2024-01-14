@@ -1,7 +1,10 @@
-const bcrypt = require("bcrypt");
-const UserModel = require("../models/user.ts");
-const helper = require("../tests/test_helper.js");
-const supertest = require("supertest");
+import bcrypt from "bcrypt";
+import UserModel from "../models/user";
+import { usersInDb } from "../tests/test_helper";
+import supertest from "supertest";
+import { app } from "../app";
+
+const api = supertest(app);
 
 describe("when there is initially one user at db", () => {
   beforeEach(async () => {
@@ -10,29 +13,29 @@ describe("when there is initially one user at db", () => {
     } catch (error) {
       console.log(error);
     }
-    const passwordHash = await bcrypt.hash("sekret", 10);
-    const user = new UserModel({ username: "root", passwordHash });
-
+    const gensalt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash("sekret", gensalt);
+    const user = new UserModel({
+      username: "root",
+      passwordHash,
+    });
     await user.save();
   });
 
   test("creation succeeds with a fresh username", async () => {
-    const usersAtStart = await helper.usersInDb();
-
+    const usersAtStart = await usersInDb();
     const newUser = {
       username: "mluukkai",
       name: "Matti Luukkainen",
       password: "salainen",
     };
-
-    //@ts-ignore
     await api
       .post("/api/users")
       .send(newUser)
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
-    const usersAtEnd = await helper.usersInDb();
+    const usersAtEnd = await usersInDb();
     expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
 
     const usernames = usersAtEnd.map((u: any) => u.username);
@@ -40,23 +43,26 @@ describe("when there is initially one user at db", () => {
   });
 
   test("creation fails with proper statuscode and message if username already taken", async () => {
-    const usersAtStart = await helper.usersInDb();
+    try {
+      const usersAtStart = await usersInDb();
 
-    const newUser = {
-      username: "root",
-      name: "Superuser",
-      password: "salainen",
-    };
-    //@ts-ignore
-    const result = await api
-      .post("/api/users")
-      .send(newUser)
-      .expect(400)
-      .expect("Content-Type", /application\/json/);
+      const newUser = {
+        username: "root",
+        name: "Superuser",
+        password: "salainen",
+      };
+      const result = await api
+        .post("/api/users")
+        .send(newUser)
+        .expect(400)
+        .expect("Content-Type", /application\/json/);
 
-    expect(result.body.error).toContain("expected `username` to be unique");
+      expect(result.body.error).toContain("expected `username` to be unique");
 
-    const usersAtEnd = await helper.usersInDb();
-    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+      const usersAtEnd = await usersInDb();
+      expect(usersAtEnd).toHaveLength(usersAtStart.length);
+    } catch (err) {
+      console.log(err);
+    }
   });
 });

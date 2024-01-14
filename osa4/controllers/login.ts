@@ -1,12 +1,11 @@
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import bcrypt = require("bcrypt");
-import { UserT } from "../models/user";
-const UserModel = require("../models/user");
+import UserModel from "../models/user";
 
 const loginRouter = require("express").Router();
 loginRouter.post("/", async (request: Request, response: Response) => {
-  const { username, password } = request.body as UserT;
+  const { username, password } = request.body as any;
 
   const user = await UserModel.findOne({ username });
   const passwordCorrect =

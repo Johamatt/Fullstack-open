@@ -1,14 +1,16 @@
-const Blog = require("../models/blog");
-
-const { blogsTestDataAPI } = require("../testData/blogsTestData");
+import Blog from "../models/blog";
+import { blogsTestDataAPI } from "../testData/blogsTestData";
+import User from "../models/user";
 
 const nonExistingId = async () => {
   const blog = new Blog({ author: "dadaa", content: "willremovethissoon" });
   await blog.save();
+  //@ts-ignore;
   await blog.remove();
 
   return blog._id.toString();
 };
+
 const blogsInDb = async () => {
   const blogs = await Blog.find({});
   return blogs.map((blog) => blog.toJSON());
@@ -19,9 +21,4 @@ const usersInDb = async () => {
   return users.map((u) => u.toJSON());
 };
 
-module.exports = {
-  blogsTestDataAPI,
-  nonExistingId,
-  blogsInDb,
-  usersInDb,
-};
+export { blogsTestDataAPI, nonExistingId, blogsInDb, usersInDb };

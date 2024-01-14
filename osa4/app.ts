@@ -1,15 +1,18 @@
+import {
+  tokenExtractor,
+  userExtractor,
+  requestLogger,
+  unknownEndpoint,
+  errorHandler,
+} from "./utils/middleware";
+import logger from "./utils/logger";
 import { MONGODB_URI } from "./utils/config";
 import cors from "cors";
 import express from "express";
 import mongoose from "mongoose";
 import loginRouter from "./controllers/login";
-require("express-async-errors");
-const blogsRouter = require("./controllers/blogs");
-const usersRouter = require("./controllers/users");
-const middleware = require("./utils/middleware");
-const logger = require("./utils/logger");
-const app = express();
-const { userExtractor } = require("./utils/middleware");
+import usersRouter from "./controllers/users";
+import blogRouter from "./controllers/blogs";
 
 mongoose.set("strictQuery", false);
 
@@ -22,17 +25,20 @@ mongoose
   .catch((error: Error) => {
     logger.error("error connection to MongoDB:", error.message);
   });
-app.use(middleware.tokenExtractor);
+
+const app = express();
+//@ts-ignore
+app.use(tokenExtractor);
 app.use(cors());
 app.use(express.static("build"));
 app.use(express.json());
-app.use(middleware.requestLogger);
-
-app.use("/api/blogs", userExtractor, blogsRouter);
+app.use(requestLogger);
+//@ts-ignore
+app.use("/api/blogs", userExtractor, blogRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
 
-app.use(middleware.unknownEndpoint);
-app.use(middleware.errorHandler);
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
-module.exports = app;
+export { app };

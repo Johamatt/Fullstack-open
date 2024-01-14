@@ -1,15 +1,14 @@
-import mongoose, { ObjectId, Schema, model } from "mongoose";
+import { ObjectId, Schema, model, Document } from "mongoose";
 import { UserT } from "./user";
 
-export type BlogT = {
-  [x: string]: any;
+export interface BlogT extends Document {
   _id?: ObjectId | string;
   title: string;
   author?: string;
   url: string;
   likes: number;
   user: UserT["_id"];
-};
+}
 
 const blogSchema = new Schema<BlogT>({
   title: {
@@ -36,8 +35,6 @@ blogSchema.set("toJSON", {
   },
 });
 
-// export const BlogModel = model<BlogT>("Blog", blogSchema);
+const BlogModel = model<BlogT>("Blog", blogSchema);
 
-const BlogModel = mongoose.model("Blog", blogSchema);
-
-module.exports = BlogModel;
+export default BlogModel;
