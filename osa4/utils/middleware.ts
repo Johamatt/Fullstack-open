@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { UserT } from "../models/user";
 const logger = require("./logger");
+const UserModel = require("../models/user");
 
 interface TokenRequest extends Request {
   token?: string;
@@ -43,6 +44,31 @@ const tokenExtractor = (
   }
 };
 
+const userExtractor = async (
+  request: TokenRequest,
+  response: Response,
+  next: NextFunction
+) => {
+  if (request.method === "GET") {
+    return next();
+  }
+  if (!request.token) {
+    return response.status(401).json({ error: "Token missing or invalid" });
+  }
+  const decodedToken = jwt.verify(request.token!, process.env.SECRET!) as any;
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "Token invalid" });
+  }
+  try {
+    const user: UserT = await UserModel.findById(decodedToken.id);
+    request.user = user;
+    next();
+  } catch (error) {
+    console.error("Error finding user:", error);
+    return response.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const unknownEndpoint = (request: Request, response: Response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
@@ -75,4 +101,5 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
   tokenExtractor,
+  userExtractor,
 };
