@@ -77,7 +77,7 @@ blogRouter.delete(
 
 blogRouter.put(
   "/:id",
-  async (request: Request, response: Response, next: NextFunction) => {
+  async (request: TokenRequest, response: Response, next: NextFunction) => {
     try {
       const body: BlogT = request.body;
       const blog: any = {
@@ -85,7 +85,7 @@ blogRouter.put(
         author: body.author,
         url: body.url,
         likes: body.likes !== undefined ? body.likes : 0,
-        user: "",
+        user: request.user._id,
       };
 
       const updatedBlog = await BlogModel.findByIdAndUpdate(
