@@ -40,7 +40,7 @@ const App = () => {
             const person: Person = {
               name: newName,
               number: newNumber,
-              id: existingPerson.id,
+              _id: existingPerson._id,
             };
             const infobox = await update(person);
             showInfoBox(infobox.msg, infobox.type);
@@ -50,7 +50,6 @@ const App = () => {
       const person: Person = {
         name: newName,
         number: newNumber,
-        id: Math.floor(Math.random() * 10000),
       };
       const infobox = await create(person);
       showInfoBox(infobox.msg, infobox.type);

@@ -7,13 +7,13 @@ import {
 } from "./utils/middleware";
 import logger from "./utils/logger";
 import { MONGODB_URI } from "./utils/config";
-import cors from "cors";
+
 import express from "express";
 import mongoose from "mongoose";
 import loginRouter from "./controllers/login";
 import usersRouter from "./controllers/users";
 import blogRouter from "./controllers/blogs";
-
+const cors = require("cors");
 mongoose.set("strictQuery", false);
 
 logger.info("connecting to db");
@@ -27,9 +27,9 @@ mongoose
   });
 
 const app = express();
+app.use(cors());
 //@ts-ignore
 app.use(tokenExtractor);
-app.use(cors());
 app.use(express.static("build"));
 app.use(express.json());
 app.use(requestLogger);
