@@ -10,6 +10,7 @@ const Blog = ({blog, updateBlog, deleteBlog} ) => {
     marginBottom: 5
   }
 
+  const user = window.localStorage.getItem('loggedBlogappUser')
   return (
     <div style={blogStyle}>
       <div> 
@@ -21,11 +22,15 @@ const Blog = ({blog, updateBlog, deleteBlog} ) => {
         <p>{blog.likes}</p>
         <button onClick={() => updateBlog(blog)}>Like</button>
         <p>{blog.user.name}</p>
-
-        <button onClick={() => deleteBlog(blog.id, blog)}>Delete</button>
+         {
+            JSON.parse(user).username === blog.user.username ?  
+            <button onClick={() => deleteBlog(blog.id, blog)}>Delete</button>
+            : 
+            <div/>
+          }
       </div>
         ) : 
-        <div></div>
+        <div/>
       }
       <button onClick={() => setShowMore(!showMore)}>
         {showMore ? "Hide" : "View"}
