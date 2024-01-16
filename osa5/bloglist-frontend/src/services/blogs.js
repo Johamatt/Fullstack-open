@@ -15,7 +15,6 @@ const create = async (newObject) => {
   const config = {
     headers: { Authorization: token },
   };
-
   const response = await axios.post(baseUrl, newObject, config);
   return response.data;
 };
@@ -32,7 +31,7 @@ const deleteBlog = async (id, blog) => {
       headers: { Authorization: token },
       data: blog,
     };
-    const res = await axios.delete(`${baseUrl}/${id}`, config); // Pass the configuration object as the second parameter
+    const res = await axios.delete(`${baseUrl}/${id}`, config);
     return res.data;
   } catch (err) {
     console.log(err);
