@@ -14,15 +14,16 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
   return (
     <div style={blogStyle}>
       <div>
-        {blog.title} {blog.author}
+        <p>{blog.title}</p>
+        <p>{blog.author}</p>
       </div>
       {showMore ? (
         <div>
           <p>{blog.url}</p>
           <p>{blog.likes}</p>
-          <button onClick={() => updateBlog(blog)}>Like</button>
+          <button onClick={() => updateBlog(blog)} data-testid='like-btn'>Like</button>
           <p>{blog.user.name}</p>
-          {JSON.parse(user).username === blog.user.username ? (
+          {user && JSON.parse(user).username === blog.user.username ? (
             <button onClick={() => deleteBlog(blog.id, blog)}>Delete</button>
           ) : (
             <div />
@@ -31,7 +32,7 @@ const Blog = ({ blog, updateBlog, deleteBlog }) => {
       ) : (
         <div />
       )}
-      <button onClick={() => setShowMore(!showMore)}>
+      <button onClick={() => setShowMore(!showMore)}  data-testid='hide-show-btn'>
         {showMore ? "Hide" : "View"}
       </button>
     </div>

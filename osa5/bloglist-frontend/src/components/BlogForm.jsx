@@ -16,25 +16,27 @@ const BlogForm = ({ createBlog, setMessage }) => {
       setTimeout(() => {
         setMessage(null);
       }, 5000);
-      setNewBlog({ title: "", url: "", author: "" });
-
     } catch (err) {
       console.log(err);
       setMessage(err.response, TYPEMSG.ERROR);
+      setNewBlog({ title: "", url: "", author: "" });
       setTimeout(() => {
         setMessage(null);
       }, 5000);
     }
+    setNewBlog({ title: "", url: "", author: "" });
   };
 
   return (
-    <form onSubmit={addBlog} style={{ flexDirection: "column", display: "flex", width: "25%" }}>
+    <form onSubmit={addBlog} style={{ flexDirection: "column", display: "flex", width: "25%" }} className="blogForm">
       title
       <input
         type="text"
         name="title"
         value={newBlog.title}
         onChange={(event) => setNewBlog({ ...newBlog, title: event.target.value })}
+        placeholder='write title here'
+        data-testid='blog-title-input'
       />
       url
       <input
@@ -42,6 +44,8 @@ const BlogForm = ({ createBlog, setMessage }) => {
         name="url"
         value={newBlog.url}
         onChange={(event) => setNewBlog({ ...newBlog, url: event.target.value })}
+        placeholder='write url here'
+        data-testid='url-input'
       />
       author
       <input
@@ -49,8 +53,10 @@ const BlogForm = ({ createBlog, setMessage }) => {
         name="author"
         value={newBlog.author}
         onChange={(event) => setNewBlog({ ...newBlog, author: event.target.value })}
+        placeholder='write author here'
+        data-testid='author-input'
       />
-      <button type="submit" style={{ marginTop: 5 }}>save</button>
+      <button type="submit" data-testid="blog-form-btn" style={{ marginTop: 5 }}>save</button>
     </form>
   );
 };

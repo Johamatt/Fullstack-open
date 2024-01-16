@@ -125,17 +125,19 @@ const App = () => {
             <button style={{ width: "25%" }} onClick={() => setShowBlogForm(!showBlogForm)}>{showBlogForm ? "cancel" : "new blog"}</button>
           </div>
           <div>
-            <ul>
-              {blogs.map((blog, i) => (
-                <Blog
-                  key={i}
-                  blog={blog}
-                  updateBlog={updateBlog}
-                  deleteBlog={deleteBlogm}
-                />
-              )
-              )}
-            </ul>
+            <li>
+              <ul>
+                {blogs.map((blog, i) => (
+                  <Blog
+                    key={i}
+                    blog={blog}
+                    updateBlog={updateBlog}
+                    deleteBlog={deleteBlogm}
+                  />
+                )
+                )}
+              </ul>
+            </li>
           </div>
         </>
       }
