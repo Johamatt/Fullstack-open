@@ -34,9 +34,11 @@ export const tokenExtractor = (
     return next();
   }
   const authHeader = request.headers["authorization"];
+
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return response.status(401).json({ error: "Invalid Authorization header" });
   }
+
   const token = authHeader.split("Bearer ")[1];
   try {
     jwt.verify(token, process.env.SECRET!) as any;
@@ -60,6 +62,7 @@ export const userExtractor = async (
   ) {
     return next();
   }
+
   if (!request.token) {
     return response.status(401).json({ error: "Token missing or invalid" });
   }
@@ -70,6 +73,7 @@ export const userExtractor = async (
   try {
     const user: any = await UserModel.findById(decodedToken.id);
     request.user = user;
+
     next();
   } catch (error) {
     console.error("Error finding user:", error);

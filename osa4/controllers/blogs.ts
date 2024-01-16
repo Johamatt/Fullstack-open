@@ -61,8 +61,12 @@ blogRouter.post(
 blogRouter.delete(
   "/:id",
   async (request: TokenRequest, response: Response, next: NextFunction) => {
+    console.log("user:" + request.user);
+    console.log("bod:" + request.body.user);
     try {
       const blog: BlogT | null = await BlogModel.findById(request.params.id);
+      console.log(blog?.user?.toString());
+      console.log(request);
       if (blog && blog.user?.toString() === request.user._id?.toString()) {
         await BlogModel.findByIdAndDelete(request.params.id);
         response.status(204).end();
@@ -80,12 +84,13 @@ blogRouter.put(
   async (request: TokenRequest, response: Response, next: NextFunction) => {
     try {
       const body: BlogT = request.body;
+
       const blog: any = {
         title: body.title,
         author: body.author,
         url: body.url,
         likes: body.likes !== undefined ? body.likes : 0,
-        user: request.user._id,
+        user: body._id?.toString(),
       };
 
       const updatedBlog = await BlogModel.findByIdAndUpdate(
