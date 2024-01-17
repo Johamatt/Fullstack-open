@@ -16,6 +16,14 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      blogService.setToken(user.token);
+    }
+  }, []);
   const [showBlogForm, setShowBlogForm] = useState(false);
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -23,16 +31,6 @@ const App = () => {
       setBlogs( sortBlogs );
     }) ;
   }, []);
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogappUse");
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
-
   const createBlog = async (blogObject) => {
     blogService
       .create(blogObject)
@@ -68,6 +66,7 @@ const App = () => {
       window.localStorage.setItem(
         "loggedBlogappUser", JSON.stringify(user)
       );
+
       blogService.setToken(user.token);
       setUser(user);
       setUsername("");
@@ -87,6 +86,7 @@ const App = () => {
         <div>
           username
           <input
+            id='username'
             type="text"
             value={username}
             name="Username"
@@ -96,13 +96,14 @@ const App = () => {
         <div>
           password
           <input
+            id='password'
             type="password"
             value={password}
             name="Password"
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button type="submit">login</button>
+        <button type="submit" id="login-button">login</button>
       </form>
     </>
   );
@@ -116,7 +117,7 @@ const App = () => {
           <h2>Blogs</h2>
           <div style={{ marginBottom: 50 }}>
             <p>{user.name} logged in</p>
-            <button onClick={() => window.localStorage.removeItem("loggedBlogappUser")}>
+            <button onClick={() => window.localStorage.removeItem("loggedBlogappUser")} id="logout-btn">
               logout
             </button>
           </div>
@@ -130,6 +131,7 @@ const App = () => {
                 {blogs.map((blog, i) => (
                   <Blog
                     key={i}
+                    index={i}
                     blog={blog}
                     updateBlog={updateBlog}
                     deleteBlog={deleteBlogm}

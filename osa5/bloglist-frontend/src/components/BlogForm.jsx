@@ -37,6 +37,7 @@ const BlogForm = ({ createBlog, setMessage }) => {
         onChange={(event) => setNewBlog({ ...newBlog, title: event.target.value })}
         placeholder='write title here'
         data-testid='blog-title-input'
+        id="blog-title-input"
       />
       url
       <input
@@ -46,6 +47,7 @@ const BlogForm = ({ createBlog, setMessage }) => {
         onChange={(event) => setNewBlog({ ...newBlog, url: event.target.value })}
         placeholder='write url here'
         data-testid='url-input'
+        id="url-input"
       />
       author
       <input
@@ -53,8 +55,9 @@ const BlogForm = ({ createBlog, setMessage }) => {
         name="author"
         value={newBlog.author}
         onChange={(event) => setNewBlog({ ...newBlog, author: event.target.value })}
-        placeholder='write author here'
-        data-testid='author-input'
+        placeholder="write author here"
+        data-testid="author-input"
+        id="author-input"
       />
       <button type="submit" data-testid="blog-form-btn" style={{ marginTop: 5 }}>save</button>
     </form>

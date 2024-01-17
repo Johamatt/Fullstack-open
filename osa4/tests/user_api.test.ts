@@ -3,6 +3,8 @@ import UserModel from "../models/user";
 import { usersInDb } from "../tests/test_helper";
 import supertest from "supertest";
 import { app } from "../app";
+import BlogModel from "../models/blog";
+import mongoose from "mongoose";
 
 const api = supertest(app);
 
@@ -25,9 +27,9 @@ describe("when there is initially one user at db", () => {
   test("creation succeeds with a fresh username", async () => {
     const usersAtStart = await usersInDb();
     const newUser = {
-      username: "mluukkai",
-      name: "Matti Luukkainen",
-      password: "salainen",
+      username: "mluukkai1",
+      name: "Matti Luukkainen2",
+      password: "salainen1",
     };
     await api
       .post("/api/users")
@@ -64,5 +66,12 @@ describe("when there is initially one user at db", () => {
     } catch (err) {
       console.log(err);
     }
+  });
+
+  afterAll(async () => {
+    await UserModel.deleteMany({});
+    await BlogModel.deleteMany({});
+
+    await mongoose.connection.close();
   });
 });

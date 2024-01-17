@@ -26,13 +26,10 @@ export const tokenExtractor = (
   response: Response,
   next: NextFunction
 ) => {
-  if (
-    request.method === "GET" ||
-    request.path === "/api/login" ||
-    request.path === "/api/users"
-  ) {
+  if (request.method === "GET") {
     return next();
   }
+
   const authHeader = request.headers["authorization"];
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -55,11 +52,7 @@ export const userExtractor = async (
   response: Response,
   next: NextFunction
 ) => {
-  if (
-    request.method === "GET" ||
-    request.path === "/api/login" ||
-    request.path === "/api/users"
-  ) {
+  if (request.method === "GET") {
     return next();
   }
 

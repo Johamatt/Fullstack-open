@@ -13,6 +13,7 @@ import mongoose from "mongoose";
 import loginRouter from "./controllers/login";
 import usersRouter from "./controllers/users";
 import blogRouter from "./controllers/blogs";
+import testRouter from "./controllers/forTesting";
 const cors = require("cors");
 mongoose.set("strictQuery", false);
 
@@ -27,14 +28,18 @@ mongoose
   });
 
 const app = express();
+
+if (process.env.NODE_ENV === "test") {
+  app.use("/api/testing", testRouter);
+}
 app.use(cors());
 //@ts-ignore
-app.use(tokenExtractor);
+
 app.use(express.static("build"));
 app.use(express.json());
 app.use(requestLogger);
 //@ts-ignore
-app.use("/api/blogs", userExtractor, blogRouter);
+app.use("/api/blogs", tokenExtractor, userExtractor, blogRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
 

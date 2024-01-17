@@ -1,5 +1,4 @@
 const { blogsTestDataAPI } = require("../testData/blogsTestData");
-// const mongoose = require("mongoose");
 import bcrypt from "bcrypt";
 import { usersInDb } from "../tests/test_helper";
 
@@ -8,6 +7,7 @@ import supertest from "supertest";
 import BlogModel from "../models/blog";
 import { app } from "../app";
 import UserModel from "../models/user";
+import mongoose from "mongoose";
 
 const api = supertest(app);
 let authToken: any;
@@ -180,6 +180,8 @@ test("a blog can be edited", async () => {
   expect(blogsAtEnd[0].likes).toBeGreaterThan(blogsAtStart[0].likes);
 });
 
-// afterAll(async () => {
-//   await mongoose.connection.close();
-// });
+afterAll(async () => {
+  await UserModel.deleteMany({});
+  await BlogModel.deleteMany({});
+  await mongoose.connection.close();
+});
